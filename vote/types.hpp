@@ -43,3 +43,58 @@ struct _token_asset {
         return !(*this == asset);
     }
 };
+
+struct _pair {
+
+    uint64_t id;
+    name creator;
+
+    _token token0;
+
+    _token token1;
+
+    asset reserve0;
+
+    asset reserve1;
+
+    asset liquidity;
+
+    uint64_t price0_last;
+
+    uint64_t price1_last;
+
+    time_point_sec update_at;
+
+    uint64_t primary_key() const { return id;}
+};
+
+struct _pair_info {
+
+    uint64_t id;
+
+    uint16_t fee0;
+
+    name fee0_account;
+
+    uint16_t fee1;
+
+    name fee1_account;
+
+    uint64_t primary_key() const { return id;}
+};
+
+struct _pair_system_info {
+    uint64_t id;
+
+    uint16_t fee0;
+
+    name fee0_account;
+
+    uint16_t fee1;
+
+    name fee1_account;
+
+    uint64_t primary_key() const { return id;}
+};
+
+
