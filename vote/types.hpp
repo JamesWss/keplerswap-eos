@@ -98,3 +98,16 @@ struct _pair_system_info {
 };
 
 
+struct _user_info {
+
+    name owner;
+
+    name inviter;
+
+    int num;
+
+    time_point_sec create_at;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t inviter_key() const { return inviter.value; }
+};
