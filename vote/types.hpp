@@ -97,4 +97,36 @@ struct _pair_system_info {
     uint64_t primary_key() const { return id;}
 };
 
+struct _user_info {
+
+    name owner;
+
+    name inviter;
+
+    int num;
+
+    time_point_sec create_at;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t inviter_key() const { return inviter.value; }
+};
+
+
+uint128_t token2key(_token token) {
+    return ((uint128_t)token.contract.value) << 64 | ((uint128_t)token.symbol.code().raw());
+}
+
+struct _transfer_info {
+
+    uint64_t id;
+
+    _token token;
+
+    asset quantity;
+    time_point_sec update_at;
+
+    uint64_t primary_key() const { return id; }
+    uint128_t token_key() const { return token2key(token); }
+};
+
 
