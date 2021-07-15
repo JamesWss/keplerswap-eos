@@ -129,4 +129,13 @@ struct _transfer_info {
     uint128_t token_key() const { return token2key(token); }
 };
 
+struct _id_info {
 
+    uint64_t id;
+
+    uint64_t current_id;
+
+    uint64_t current_num;
+
+    uint64_t primary_key() const { return id;}
+};
