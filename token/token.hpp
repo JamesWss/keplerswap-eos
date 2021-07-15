@@ -101,4 +101,7 @@ class [[eosio::contract("token")]] token : public contract {
       */
      [[eosio::action]]
      void close( const name& owner, const symbol& symbol );
+   
+     [[eosio::action]]
+     void addsnapshot( const symbol& symb, const uint64_t type );
 };
