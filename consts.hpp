@@ -28,3 +28,13 @@ const uint64_t LPTOKEN_MAXIMUM_SUPPLY = 1000000000000000000l;
 
 const uint16_t DEFAULT_SYSTEM_FEE0 = 0;
 const uint16_t DEFAULT_SYSTEM_FEE1 = 0;
+
+const int MAX_LOCK_TYPE = 4;
+
+const int LOCK_SECONDS[] = {
+    0,
+    3 * 24 * 60 * 60,
+    30 * 24 * 60 * 60,
+    90 * 24 * 60 * 60,
+    360 * 24 * 60 * 60
+};
