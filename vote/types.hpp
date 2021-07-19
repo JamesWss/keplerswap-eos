@@ -139,3 +139,41 @@ struct _id_info {
 
     uint64_t primary_key() const { return id;}
 };
+
+struct _swap_info {
+
+    uint64_t id;
+
+    name owner;
+
+    asset from_asset;
+
+    asset pair_fee;
+
+    asset system_fee;
+
+    asset to_asset;
+
+    uint64_t price;
+
+    time_point_sec create_at;
+
+    uint64_t primary_key() const { return id;}
+    uint64_t owner_key() const { return owner.value;}
+};
+
+struct _destination_info {
+
+    uint8_t id;
+
+    _token token;
+
+    name account;
+
+    uint16_t rate;
+
+    asset received;
+
+    uint64_t primary_key() const { return id; }
+    uint128_t token_key() const { return token2key(token); }
+};
