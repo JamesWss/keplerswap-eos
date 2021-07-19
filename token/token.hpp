@@ -104,4 +104,48 @@ class [[eosio::contract("token")]] token : public contract {
    
      [[eosio::action]]
      void addsnapshot( const symbol& symb, const uint64_t type );
+
+     static asset get_supply( const name& token_contract_account, const symbol_code& sym_code )
+     {
+        stats statstable( token_contract_account, sym_code.raw() );
+        const auto& st = statstable.get( sym_code.raw() );
+        return st.supply;
+     }
+
+     static asset get_balance( const name& token_contract_account, const name& owner, const symbol& sym )
+     {
+        accounts accountstable( token_contract_account, owner.value );
+        const auto ac = accountstable.find( sym.code().raw() );
+        if (ac == accountstable.end()) {
+            return asset (0, sym);
+        } else {
+            return ac->balance;
+        }
+        /*
+        const auto& ac = accountstable.get( sym_code.raw() );
+        return ac.balance;
+        */
+     }
+
+     using create_action = eosio::action_wrapper<"create"_n, &token::create>;
+     using issue_action = eosio::action_wrapper<"issue"_n, &token::issue>;
+     using retire_action = eosio::action_wrapper<"retire"_n, &token::retire>;
+     using transfer_action = eosio::action_wrapper<"transfer"_n, &token::transfer>;
+     using open_action = eosio::action_wrapper<"open"_n, &token::open>;
+     using close_action = eosio::action_wrapper<"close"_n, &token::close>;
+  private:
+     struct [[eosio::table]] account {
+        asset    balance;
+
+        uint64_t primary_key()const { return balance.symbol.code().raw(); }
+     };
+
+     struct [[eosio::table]] currency_stats {
+        asset    supply;
+        asset    max_supply;
+        name     issuer;
+        int      accounts;
+
+        uint64_t primary_key()const { return supply.symbol.code().raw(); }
+     };
 };
