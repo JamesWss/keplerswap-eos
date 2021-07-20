@@ -38,3 +38,14 @@ const int LOCK_SECONDS[] = {
     90 * 24 * 60 * 60,
     360 * 24 * 60 * 60
 };
+
+const int LOCK_TYPE_UNLOCK = 0;
+const int LOCK_TYPE_360 = 4;
+
+const int LOCK_RATIO[] = {
+    3,
+    30,
+    10,
+    15,
+    30
+};
