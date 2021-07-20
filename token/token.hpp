@@ -148,4 +148,15 @@ class [[eosio::contract("token")]] token : public contract {
 
         uint64_t primary_key()const { return supply.symbol.code().raw(); }
      };
+   
+     struct [[eosio::table]] snapshot : public _snapshot {};
+     struct [[eosio::table]] usersnapshot : public _user_snapshot {};
+
+     typedef eosio::multi_index< "accounts"_n, account > accounts;
+     typedef eosio::multi_index< "stat"_n, currency_stats > stats;
+     typedef eosio::multi_index< "snapshot"_n, snapshot > snapshot_index;
+     typedef eosio::multi_index< "usersnapshot"_n, usersnapshot,
+            indexed_by<"symbol"_n, const_mem_fun<_user_snapshot, uint64_t, &_user_snapshot::symbol_key>>,
+            indexed_by<"symboltype"_n, const_mem_fun<_user_snapshot, uint128_t, &_user_snapshot::symboltype_key>>
+     > usersnapshot_index;
 };
