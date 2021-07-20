@@ -177,3 +177,41 @@ struct _destination_info {
     uint64_t primary_key() const { return id; }
     uint128_t token_key() const { return token2key(token); }
 };
+
+
+struct fee_transfer_info {
+
+    uint64_t pair_id;
+
+    name owner;
+};
+
+struct _lock_info {
+
+    name owner;
+
+    name inviter;
+
+    uint64_t pair_id;
+
+    asset liquidity;
+
+    uint64_t shares;
+
+    uint64_t debt0;
+
+    uint64_t debt1;
+
+    asset pending0;
+
+    asset pending1;
+
+    asset withdrawed0;
+
+    asset withdrawed1;
+
+    bool avaliable;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t owner_key() const { return owner.value; }
+};
