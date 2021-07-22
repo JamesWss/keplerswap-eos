@@ -49,3 +49,53 @@ const int LOCK_RATIO[] = {
     15,
     30
 };
+
+const int UNLOCK_RATIO = LOCK_RATIO[LOCK_TYPE_UNLOCK];
+
+const int MINER_USER_RATE = 8999;
+
+const uint64_t SNAPSHOT_TYPE_VOTE = 1L;
+
+#ifdef DEV
+const name DEFAULT_FEE0_ACCOUNT = ""_n;
+const name DEFAULT_FEE1_ACCOUNT = ""_n;
+const name TOKEN_CONTRACT = "token"_n;
+const name LPTOKEN_CONTRACT = "lp"_n;
+const name SWAP_CONTRACT = "swap"_n;
+const name MINER_CONTRACT = "miner"_n;
+const name FEE_CONTRACT = "fee"_n;
+const name DESTROY_CONTRACT = "destroy"_n;
+const name VOTE_CONTRACT = "vote"_n;
+const name EOSA_ISSUER = "eosio"_n;
+const name FOMO_CONTRACT = "fomo"_n;
+const name INVITER_CONTRACT = "inviter"_n;
+const name SYSTEM_ACCOUNT = "system"_n;
+#define DRAW_USER_PERCENT 100
+#define EOSA_TOKEN_TRANSFER "token::transfer"
+#define DRAW_CLOSE_SECONDS 10
+#define VOTE_SECONDS 10
+#define COUNT_SECONDS 10 
+#define MAX_LUCKY_USER_NUM 11
+#define MIN_LUCKY_USER_NUM 11
+#else
+const name INVITER_CONTRACT = "inviter"_n;
+const name DEFAULT_FEE0_ACCOUNT = ""_n;
+const name DEFAULT_FEE1_ACCOUNT = ""_n;
+const name TOKEN_CONTRACT = "token"_n;
+const name LPTOKEN_CONTRACT = "lp"_n;
+const name SWAP_CONTRACT = "swap"_n;
+const name MINER_CONTRACT = "miner"_n;
+const name FEE_CONTRACT = "fee"_n;
+const name DESTROY_CONTRACT = "destroy"_n;
+const name VOTE_CONTRACT = "vote"_n;
+const name EOSA_ISSUER = "eosio"_n;
+const name FOMO_CONTRACT = "fomo"_n;
+const name SYSTEM_ACCOUNT = "system"_n;
+#define DRAW_USER_PERCENT 30
+#define EOSA_TOKEN_TRANSFER "token::transfer"
+#define DRAW_CLOSE_SECONDS 72 * 3600
+#define VOTE_SECONDS 5 * 24 * 60 * 60 
+#define COUNT_SECONDS 2 * 24 * 60 * 60
+#define MAX_LUCKY_USER_NUM 11
+#define MIN_LUCKY_USER_NUM 11
+#endif
