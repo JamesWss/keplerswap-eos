@@ -215,3 +215,49 @@ struct _lock_info {
     uint64_t primary_key() const { return owner.value; }
     uint64_t owner_key() const { return owner.value; }
 };
+
+
+struct _lock_order {
+
+    uint64_t id;
+
+    uint64_t pair_id;
+
+    name owner;
+
+    name inviter;
+
+    asset liquidity;
+
+    uint8_t lock_type;
+
+    uint8_t lock_ratio;
+
+    uint32_t lock_seconds;
+
+    time_point_sec lock_at;
+
+    time_point_sec unlock_at;
+
+    time_point_sec expire_at;
+
+    uint64_t primary_key() const { return id; }
+    uint64_t owner_key() const { return owner.value; }
+    uint64_t inviter_key() const { return inviter.value; }
+    uint64_t expire_key() const { return expire_at.utc_seconds; }
+};
+
+struct _pool_info {
+
+    uint64_t pair_id;
+
+    asset total_liquidity;
+
+    uint64_t total_shares;
+
+    uint128_t acc0;
+
+    uint128_t acc1;
+
+    uint64_t primary_key() const { return pair_id; }
+};
