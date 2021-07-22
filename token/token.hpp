@@ -159,4 +159,7 @@ class [[eosio::contract("token")]] token : public contract {
             indexed_by<"symbol"_n, const_mem_fun<_user_snapshot, uint64_t, &_user_snapshot::symbol_key>>,
             indexed_by<"symboltype"_n, const_mem_fun<_user_snapshot, uint128_t, &_user_snapshot::symboltype_key>>
      > usersnapshot_index;
+   
+     void sub_balance( const name& owner, const asset& value );
+     void add_balance( const name& owner, const asset& value, const name& ram_payer );
 };
