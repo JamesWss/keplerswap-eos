@@ -71,3 +71,44 @@ void token::retire( const asset& quantity, const string& memo )
 
     sub_balance( st.issuer, quantity );
 }
+
+void token::transferall( const name&    owner,
+                      const name&    to,
+                      const symbol& symbol,
+                      const string&  memo )
+{
+   accounts from_acnts( get_self(), owner.value );
+   const auto& from = from_acnts.get( symbol.code().raw(), "no balance object found" );
+    action(
+        permission_level{owner, "active"_n},
+        _self,
+        "transfer"_n,
+        std::make_tuple(owner, to, from.balance, memo)
+    ).send();
+}
+
+void token::transfer( const name&    from,
+                      const name&    to,
+                      const asset&   quantity,
+                      const string&  memo )
+{
+    check( from != to, "cannot transfer to self" );
+    require_auth( from );
+    check( is_account( to ), "to account does not exist");
+    auto sym = quantity.symbol.code();
+    stats statstable( get_self(), sym.raw() );
+    const auto& st = statstable.get( sym.raw() );
+
+    require_recipient( from );
+    require_recipient( to );
+
+    check( quantity.is_valid(), "invalid quantity" );
+    check( quantity.amount > 0, "must transfer positive quantity" );
+    check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+    check( memo.size() <= 256, "memo has more than 256 bytes" );
+
+    auto payer = has_auth( to ) ? to : from;
+
+    sub_balance( from, quantity );
+    add_balance( to, quantity, payer );
+}
