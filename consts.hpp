@@ -99,3 +99,15 @@ const name SYSTEM_ACCOUNT = "system"_n;
 #define MAX_LUCKY_USER_NUM 11
 #define MIN_LUCKY_USER_NUM 11
 #endif
+
+const char* const TOKEN = "SDS";
+const int TOKEN_PRECISION = 4;
+const uint64_t TOKEN_SCOPE = 5456979L;
+const uint128_t TOKEN_TYPE_KEY = (uint128_t)TOKEN_SCOPE << 64 | (uint128_t)SNAPSHOT_TYPE_VOTE;
+const uint64_t VOTE_TOKEN_EXCHANGE = 100L;
+
+#define LIQUID_INFO_ID_KEY 1L
+#define SWAP_INFO_ID_KEY 2L
+#define LOCK_ORDER_ID_KEY 3L
+
+#define SWAP_INFO_MAX_NUM 100L
