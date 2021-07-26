@@ -261,3 +261,52 @@ struct _pool_info {
 
     uint64_t primary_key() const { return pair_id; }
 };
+
+struct _draw_info {
+
+    uint64_t id;
+
+    uint64_t pair_id;
+
+    checksum256 first_hash;
+
+    checksum256 last_hash;
+
+    _token token0;
+
+    _token token1;
+
+    asset quantity0;
+
+    asset quantity1;
+
+    uint32_t mine_user_num;
+    uint32_t invite_user_num;
+    uint32_t total_user_num;
+
+    uint64_t min_mine_shares;
+    uint64_t min_invite_shares;
+
+    int user_num;
+
+    int claim_num;
+
+    int legal_claim_num;
+
+    int lucky_user_num;
+
+    name best_user;
+
+    int best_user_num;
+
+    asset withdrawed_quantity0;
+
+    asset withdrawed_quantity1;
+
+    time_point_sec start_time;
+
+    time_point_sec end_time;
+
+    uint64_t primary_key() const { return id; }
+    uint64_t pair_key() const { return pair_id; }
+};
