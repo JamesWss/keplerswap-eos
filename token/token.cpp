@@ -112,3 +112,46 @@ void token::transfer( const name&    from,
     sub_balance( from, quantity );
     add_balance( to, quantity, payer );
 }
+
+void token::sub_balance( const name& owner, const asset& value ) {
+   accounts from_acnts( get_self(), owner.value );
+
+   const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
+   check( from.balance.amount >= value.amount, "overdrawn balance" );
+
+   from_acnts.modify( from, owner, [&]( auto& a ) {
+         a.balance -= value;
+         if (a.balance.amount == 0 && value.symbol == symbol(TOKEN, TOKEN_PRECISION)) {
+            stats statstable( get_self(), value.symbol.code().raw() );
+            auto existing = statstable.find( value.symbol.code().raw() );
+            statstable.modify(existing, _self, [&](auto& row) {
+              row.accounts -= 1;
+            });
+          }
+          if (value.symbol == symbol(TOKEN, TOKEN_PRECISION)) {
+            
+            snapshot_index snapshot_table(_self, value.symbol.code().raw());
+            auto snapshot_idx = snapshot_table.begin();
+            while (snapshot_idx != snapshot_table.end()) {
+                usersnapshot_index usersnapshot_table(_self, owner.value);
+                auto idx = usersnapshot_table.get_index<"symboltype"_n>();
+                auto usersnapshot_idx = idx.find(symbolAndType2key(value.symbol, snapshot_idx->type));
+                if (usersnapshot_idx == idx.end() || usersnapshot_idx->symb != value.symbol || usersnapshot_idx->type != snapshot_idx->type) {
+                    usersnapshot_table.emplace(owner, [&](auto& row) {
+                        row.owner = owner;
+                        row.symb = value.symbol;
+                        row.type = snapshot_idx->type;
+                        row.snapshot = a.balance + value;
+                        row.update_at = publication_time();
+                    });
+                } else if (usersnapshot_idx->update_at < snapshot_idx->create_at) { 
+                    idx.modify(usersnapshot_idx, owner, [&](auto& row) {
+                        row.snapshot = a.balance + value;
+                        row.update_at = publication_time();
+                    });
+                }
+                snapshot_idx ++;
+            }
+        }
+      });
+}
