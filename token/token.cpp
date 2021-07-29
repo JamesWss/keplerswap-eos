@@ -155,3 +155,81 @@ void token::sub_balance( const name& owner, const asset& value ) {
         }
       });
 }
+
+void token::add_balance( const name& owner, const asset& value, const name& ram_payer )
+{
+   accounts to_acnts( get_self(), owner.value );
+   auto to = to_acnts.find( value.symbol.code().raw() );
+   if( to == to_acnts.end() ) {
+      if (value.symbol == symbol(TOKEN, TOKEN_PRECISION)) {
+        stats statstable( get_self(), value.symbol.code().raw() );
+        auto existing = statstable.find( value.symbol.code().raw() );
+        statstable.modify(existing, _self, [&](auto& row) {
+          row.accounts += 1;
+        });
+        
+        snapshot_index snapshot_table(_self, value.symbol.code().raw());
+        auto snapshot_idx = snapshot_table.begin();
+        while (snapshot_idx != snapshot_table.end()) {
+            usersnapshot_index usersnapshot_table(_self, owner.value);
+            auto idx = usersnapshot_table.get_index<"symboltype"_n>();
+            auto usersnapshot_idx = idx.find(symbolAndType2key(value.symbol, snapshot_idx->type));
+            if (usersnapshot_idx == idx.end() || usersnapshot_idx->symb != value.symbol || usersnapshot_idx->type != snapshot_idx->type) { 
+                usersnapshot_table.emplace(ram_payer, [&](auto& row) {
+                    row.owner = owner;
+                    row.symb = value.symbol;
+                    row.type = snapshot_idx->type;
+                    row.snapshot = asset(0, value.symbol);
+                    row.update_at = publication_time();
+                });
+            } else if (usersnapshot_idx->update_at < snapshot_idx->create_at) { 
+                idx.modify(usersnapshot_idx, ram_payer, [&](auto& row) {
+                    row.snapshot = asset(0, value.symbol);
+                    row.update_at = publication_time();
+                });
+                
+            }
+            snapshot_idx ++;
+        }
+      }
+      to_acnts.emplace( ram_payer, [&]( auto& a ){
+        a.balance = value;
+      });
+   } else {
+      to_acnts.modify( to, same_payer, [&]( auto& a ) {
+        if (a.balance.amount == 0 && value.symbol == symbol(TOKEN, TOKEN_PRECISION)) {
+          stats statstable( get_self(), value.symbol.code().raw() );
+          auto existing = statstable.find( value.symbol.code().raw() );
+          statstable.modify(existing, _self, [&](auto& row) {
+            row.accounts += 1;
+          });
+        }
+        if (value.symbol == symbol(TOKEN, TOKEN_PRECISION)) {
+            
+            snapshot_index snapshot_table(_self, value.symbol.code().raw());
+            auto snapshot_idx = snapshot_table.begin();
+            while (snapshot_idx != snapshot_table.end()) {
+                usersnapshot_index usersnapshot_table(_self, owner.value);
+                auto idx = usersnapshot_table.get_index<"symboltype"_n>();
+                auto usersnapshot_idx = idx.find(symbolAndType2key(value.symbol, snapshot_idx->type));
+                if (usersnapshot_idx == idx.end() || usersnapshot_idx->symb != value.symbol || usersnapshot_idx->type != snapshot_idx->type) { 
+                    usersnapshot_table.emplace(ram_payer, [&](auto& row) {
+                        row.owner = owner;
+                        row.symb = value.symbol;
+                        row.type = snapshot_idx->type;
+                        row.snapshot = a.balance;
+                        row.update_at = publication_time();
+                    });
+                } else if (usersnapshot_idx->update_at < snapshot_idx->create_at) { 
+                    idx.modify(usersnapshot_idx, ram_payer, [&](auto& row) {
+                        row.snapshot = a.balance;
+                        row.update_at = publication_time();
+                    });
+                }
+                snapshot_idx ++;
+            }
+        }
+        a.balance += value;
+      });
+   }
+}
