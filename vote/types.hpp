@@ -310,3 +310,27 @@ struct _draw_info {
     uint64_t primary_key() const { return id; }
     uint64_t pair_key() const { return pair_id; }
 };
+
+struct _draw_share {
+    name owner;
+    uint64_t shares;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t share_key() const { return shares; }
+};
+
+struct _draw_user_info {
+
+    uint64_t draw_id;
+
+    name owner;
+
+    bool lucky;
+
+    asset withdrawed0;
+    asset withdrawed1;
+
+    time_point_sec claim_at;
+
+    uint64_t primary_key() const { return owner.value; }
+};
