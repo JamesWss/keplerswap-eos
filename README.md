@@ -4,7 +4,7 @@ In the near future, Kepler planet will be the next most habitable planet in the 
 
 Click here see the full version of KeplerSwap Whitepaper
 
-Follow us
+## Follow us
 
 Web: https://keplerswap.io/
 
