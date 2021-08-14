@@ -40,4 +40,27 @@ class [[eosio::contract]] swap : public contract {
         void createlog(uint64_t pair_id, name creator, symbol lpToken, token token0, token token1) {
             require_auth(_self);
         }
+    
+        [[eosio::action]]
+        void setfee(uint64_t pair_id, uint16_t fee0, name fee0_account, uint16_t fee1, name fee1_account);
+
+        [[eosio::action]]
+        void setsfee(uint64_t pair_id, uint16_t fee0, name fee0_account, uint16_t fee1, name fee1_account);
+
+        [[eosio::action]]
+        void deposit(name owner, uint64_t pair_id);
+
+        [[eosio::action]]
+        void depositlog(
+            name owner, 
+            uint64_t pair_id, 
+            asset token0, 
+            asset token1, 
+            asset liquidity, 
+            asset reserve0, 
+            asset reserve1, 
+            asset total_liquidity
+        ) {
+            require_auth(_self);
+        }
 };
