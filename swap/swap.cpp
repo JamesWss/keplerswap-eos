@@ -57,3 +57,81 @@ void swap::registe(name owner, name inviter) {
         row.create_at = publication_time();
     });
 }
+
+void swap::createpair(name creator, token token0, token token1) {
+    //require_auth(_self); //目前只允许本合约创建交易对
+    require_auth(creator);
+    userinfo_index userinfo_table(_self, _self.value);
+    auto userinfo_index = userinfo_table.find(creator.value);
+    check (userinfo_index != userinfo_table.end(), "user not registed");
+    pairs_index pairs_table(_self, _self.value);
+    uint64_t pair_id = 0;
+    if (pairs_table.begin() == pairs_table.end()) {
+        pair_id = INIT_PAIR_ID;
+    } else {
+        pair_id = pairs_table.rbegin()->id + 1;
+    }
+    uint16_t lptoken_precision = std::max(token0.symbol.precision(), token1.symbol.precision());
+    symbol lptoken_symbol = create_lptoken_symbol(pair_id, lptoken_precision);
+    //生成pair
+    pairs_table.emplace(creator, [&](auto& row) {
+        row.id = pair_id;
+        row.creator = creator;
+        row.token0 = token0;
+        row.token1 = token1;
+        row.reserve0 = asset(0, token0.symbol);
+        row.reserve1 = asset(0, token1.symbol);
+        row.liquidity = asset(0, lptoken_symbol);
+        row.price0_last = 0;
+        row.price1_last = 0;
+        row.update_at = publication_time();
+    });
+    //生成pair配置信息:用户配置
+    pairinfo_index pairinfo_table(_self, _self.value);
+    auto pairinfo_idx = pairinfo_table.find(pair_id);
+    if (pairinfo_idx == pairinfo_table.end()) {
+        pairinfo_table.emplace(creator, [&](auto& row) {
+            row.id = pair_id;
+            row.fee0 = 0;
+            row.fee1 = 0;
+        });
+    } else {
+        pairinfo_table.modify(pairinfo_idx, creator, [&](auto& row) {
+            row.fee0 = 0;
+            row.fee1 = 0;
+        });
+    }
+    //生成pair配置信息:系统配置
+    pairsinfo_index pairsinfo_table(_self, _self.value);
+    auto pairsinfo_idx = pairsinfo_table.find(pair_id);
+    if (pairsinfo_idx == pairsinfo_table.end()) {
+        pairsinfo_table.emplace(_self, [&](auto& row) {
+            row.id = pair_id;
+            row.fee0 = DEFAULT_SYSTEM_FEE0;
+            row.fee0_account = DEFAULT_FEE0_ACCOUNT;
+            row.fee1 = DEFAULT_SYSTEM_FEE1;
+            row.fee1_account = DEFAULT_FEE1_ACCOUNT;
+        });
+    } else {
+        pairsinfo_table.modify(pairsinfo_idx, _self, [&](auto& row) {
+            row.fee0 = DEFAULT_SYSTEM_FEE0;
+            row.fee0_account = DEFAULT_FEE0_ACCOUNT;
+            row.fee1 = DEFAULT_SYSTEM_FEE1;
+            row.fee1_account = DEFAULT_FEE1_ACCOUNT;
+        });
+    }
+    //创建LP
+    action(
+        permission_level{LPTOKEN_CONTRACT, "active"_n},
+        LPTOKEN_CONTRACT,
+        "create"_n,
+        std::make_tuple(_self, asset(LPTOKEN_MAXIMUM_SUPPLY, lptoken_symbol))
+    ).send();
+    //记录创建结果
+    action(
+        permission_level{_self, "active"_n},
+         _self,
+        "createlog"_n,
+        std::make_tuple(pair_id, creator, lptoken_symbol, token0, token1)
+    ).send();
+}
