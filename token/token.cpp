@@ -253,3 +253,13 @@ void token::open( const name& owner, const symbol& symbol, const name& ram_payer
       });
    }
 }
+
+void token::close( const name& owner, const symbol& symbol )
+{
+   require_auth( owner );
+   accounts acnts( get_self(), owner.value );
+   auto it = acnts.find( symbol.code().raw() );
+   check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
+   check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
+   acnts.erase( it );
+}
