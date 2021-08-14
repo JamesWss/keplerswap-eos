@@ -27,3 +27,24 @@ symbol create_lptoken_symbol(uint64_t id, uint16_t precision) {
     sprintf(res, "%s%s", LPTOKEN_SYMBOL_BASE, str);
 	return symbol(res, precision);
 }
+
+fee_transfer_info  parse_fee_transfer_memo(const std::string& memo) {
+    const char* str = memo.data();
+    int pair_id_end_position = 0;
+    for (int i = 0; i < memo.length(); i ++) {
+        if (str[i] == ',') {
+            pair_id_end_position = i;
+            break;
+        }
+    }
+    if (pair_id_end_position == 0) {
+        return fee_transfer_info{0, ""_n};
+    }
+    char tmp[16] = {0};
+    memcpy(tmp, str, pair_id_end_position);
+    uint64_t pair_id = atoll(tmp);
+    memset(tmp, 0, 16);
+    memcpy(tmp, str + pair_id_end_position + 1, memo.length() - pair_id_end_position - 1);
+    name owner(tmp);
+    return fee_transfer_info{pair_id, owner};
+}
