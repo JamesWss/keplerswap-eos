@@ -334,3 +334,36 @@ struct _draw_user_info {
 
     uint64_t primary_key() const { return owner.value; }
 };
+
+struct _crycle_info {
+
+    name owner;
+
+    uint64_t pair_id;
+
+    std::string title;
+
+    std::string manifest;
+
+    std::string telegram;
+ 
+    uint64_t vote_id;
+  
+    uint64_t voted;
+   
+    uint32_t members;
+    
+    asset pending0;
+    
+    asset pending1;
+
+    asset withdrawed0;
+
+    asset withdrawed1;
+
+    time_point_sec create_at;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t vote_key() const { return voted; }
+    uint64_t create_key() const { return create_at.utc_seconds; }
+};
