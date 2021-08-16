@@ -63,4 +63,29 @@ class [[eosio::contract]] swap : public contract {
         ) {
             require_auth(_self);
         }
+    
+        [[eosio::action]]
+        void swaptoken(name owner, _token token, asset min_amount, uint64_t pair_id);
+
+        [[eosio::action]]
+        void swaplog(name owner, uint64_t pair_id, uint64_t info_id, asset from, asset system_fee, asset pair_fee, asset to, uint64_t price) {
+            require_auth(_self);
+        }
+
+        [[eosio::action]]
+        void withdraw(name owner, uint64_t pair_id);
+
+        [[eosio::action]]
+        void withdrawlog(
+            name owner, 
+            uint64_t pair_id, 
+            asset token0, 
+            asset token1, 
+            asset liquidity, 
+            asset reserve0, 
+            asset reserve1, 
+            asset total_liquidity
+        ) {
+            require_auth(_self);
+        }
 };
