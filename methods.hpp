@@ -48,3 +48,11 @@ fee_transfer_info  parse_fee_transfer_memo(const std::string& memo) {
     name owner(tmp);
     return fee_transfer_info{pair_id, owner};
 }
+
+checksum256 get_current_hash() {
+    auto size = transaction_size();
+    char buf[size];
+    uint32_t read = read_transaction(buf, size);
+    check (size == read, "read transaction failed");
+    return sha256(buf, read);
+}
