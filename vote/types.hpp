@@ -367,3 +367,40 @@ struct _crycle_info {
     uint64_t vote_key() const { return voted; }
     uint64_t create_key() const { return create_at.utc_seconds; }
 };
+
+struct _crycle_member {
+
+    name owner;
+
+    name creator;
+
+    uint64_t vote_id;
+
+    uint64_t voted;
+
+    asset fee0;
+
+    asset fee1;
+
+    time_point_sec join_at;
+
+    uint64_t primary_key() const { return owner.value; }
+    uint64_t creator_key() const { return creator.value; }
+};
+
+struct _vote_crycle {
+
+    uint64_t id;
+
+    uint64_t pair_id;
+
+    time_point_sec vote_at;
+
+    time_point_sec count_at;
+
+    time_point_sec finish_at;
+
+    time_point_sec create_at;
+
+    uint64_t primary_key() const { return id; }
+};
