@@ -135,3 +135,32 @@ void swap::createpair(name creator, token token0, token token1) {
         std::make_tuple(pair_id, creator, lptoken_symbol, token0, token1)
     ).send();
 }
+
+void swap::setfee(uint64_t pair_id, uint16_t fee0, name fee0_account, uint16_t fee1, name fee1_account) {
+    pairs_index pairs_table(_self, _self.value);
+    auto pair_idx = pairs_table.find(pair_id);
+    check (pair_idx != pairs_table.end(), "pair not exists");
+    require_auth(pair_idx->creator);
+    pairinfo_index pairinfo_table(_self, _self.value);
+    auto pairinfo_idx = pairinfo_table.find(pair_id);
+    check (pairinfo_idx != pairinfo_table.end(), "pairsinfo not exists");
+    pairinfo_table.modify(pairinfo_idx, pair_idx->creator, [&](auto& row) {
+        row.fee0 = fee0;
+        row.fee0_account = fee0_account;
+        row.fee1 = fee1;
+        row.fee1_account = fee1_account;
+    });
+}
+
+void swap::setsfee(uint64_t pair_id, uint16_t fee0, name fee0_account, uint16_t fee1, name fee1_account) {
+    require_auth(_self);
+    pairsinfo_index pairsinfo_table(_self, _self.value);
+    auto pairsinfo_idx = pairsinfo_table.find(pair_id);
+    check (pairsinfo_idx != pairsinfo_table.end(), "pairsinfo not exists");
+    pairsinfo_table.modify(pairsinfo_idx, _self, [&](auto& row) {
+        row.fee0 = fee0;
+        row.fee0_account = fee0_account;
+        row.fee1 = fee1;
+        row.fee1_account = fee1_account;
+    });
+}
